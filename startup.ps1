@@ -225,7 +225,8 @@ New-Item -Path "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease" -Name 
 echo $ServerSettings | Out-File -Encoding ascii -Filepath "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease\Config\serverSettings.lua"
 
 cd "Z:\DCS World Server"
-bin\DCS_server.exe -WindowStyle Minimized
+Start-Process "bin\DCS_server.exe" -WindowStyle Minimized
+Start-Sleep -Seconds 5
 
 (Poll { ((Get-Process DCS_Server).Id | ForEach-Object { [FlaUI.Core.Application]::Attach($_) } | ForEach-Object { $_.GetAllTopLevelWindows( $automation ) } | ForEach-Object { $_.SetForeground(); $_ } | ForEach-Object { Nested-Children($_) } | Where-Object { $_.ControlType -eq "Edit"}) } { param($i) $i.Count -ne 0 } $interval $timeout $delay $reportingInterval)[0].Patterns.Value.Pattern.SetValue($serverUsername)
 
