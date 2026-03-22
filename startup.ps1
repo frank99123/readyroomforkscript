@@ -169,13 +169,9 @@ $i = (Poll { (Get-Process DCS_Updater).Id | ForEach-Object { [FlaUI.Core.Applica
 # Download and install A-4E-C community mod
 Write-Host "Installing A-4E-C mod"
 
-# Get the latest release download URL from GitHub API
-$releaseInfo = $webClient.DownloadString("https://api.github.com/repos/Community-A-4E/community-a4e-c/releases/latest")
-$releaseJson = $releaseInfo | ConvertFrom-Json
-$a4eUrl = ($releaseJson.assets | Where-Object { $_.name -like "*.zip" }).browser_download_url
-
 # Download the zip
-$webClient.DownloadFile($a4eUrl, "Z:\A-4E-C.zip")
+# This may need to be updated to adjust the A4 version
+$webClient.DownloadFile("https://github.com/Community-A-4E/community-a4e-c/releases/download/v2.3/Community_A-4E-C_v2.3.zip", "Z:\A-4E-C.zip")
 
 # Extract to the correct Saved Games location
 $modPath = "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease\Mods\aircraft"
