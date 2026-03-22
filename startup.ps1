@@ -182,6 +182,14 @@ Expand-Archive -Path "Z:\A-4E-C.zip" -DestinationPath "Z:\A-4E-C-extracted" -For
 Copy-Item -Path "Z:\A-4E-C-extracted\Mods\aircraft\A-4E-C" -Destination $modPath -Recurse -Force
 Write-Host "A-4E-C mod installed"
 
+# Modify MissionScripting.lua to allow os, io, lfs modules
+$missionScriptingPath = "Z:\DCS World Server\Scripts\MissionScripting.lua"
+(Get-Content $missionScriptingPath) `
+    -replace "(\s*sanitizeModule\('os'\))", "--`$1" `
+    -replace "(\s*sanitizeModule\('io'\))", "--`$1" `
+    -replace "(\s*sanitizeModule\('lfs'\))", "--`$1" `
+    | Set-Content $missionScriptingPath
+Write-Host "MissionScripting.lua updated"
 
 Write-Host "Starting DCS Server"
 New-Item -Path "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease" -Name "Missions" -ItemType "Directory" -Force
