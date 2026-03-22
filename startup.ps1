@@ -166,6 +166,27 @@ $reportingInterval = [System.TimeSpan]::FromMilliseconds(1000 * 60 * 5)
 $i = (Poll { (Get-Process DCS_Updater).Id | ForEach-Object { [FlaUI.Core.Application]::Attach($_) } | ForEach-Object { $_.GetAllTopLevelWindows( $automation ) } | ForEach-Object { $_.SetForeground(); $_ } | ForEach-Object { Nested-Children($_) } | Where-Object { $_.Name} | Where-Object { $_.Name.StartsWith("Successfully installed") } } { param($i) $i.Count -ne 0 } $interval $timeout $delay $reportingInterval)
 (Nested-Children($i.Parent) | Where-Object { $_.Name -eq "OK" }).Click("true")
 
+# Download and install A-4E-C community mod
+Write-Host "Installing A-4E-C mod"
+
+# Get the latest release download URL from GitHub API
+$releaseInfo = $webClient.DownloadString("https://api.github.com/repos/Community-A-4E/community-a4e-c/releases/latest")
+$releaseJson = $releaseInfo | ConvertFrom-Json
+$a4eUrl = ($releaseJson.assets | Where-Object { $_.name -like "*.zip" }).browser_download_url
+
+# Download the zip
+$webClient.DownloadFile($a4eUrl, "Z:\A-4E-C.zip")
+
+# Extract to the correct Saved Games location
+$modPath = "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease\Mods\aircraft"
+New-Item -Path $modPath -ItemType "Directory" -Force
+Expand-Archive -Path "Z:\A-4E-C.zip" -DestinationPath "Z:\A-4E-C-extracted" -Force
+
+# The zip contains a Mods/aircraft/A-4E-C folder structure, copy just the A-4E-C folder
+Copy-Item -Path "Z:\A-4E-C-extracted\Mods\aircraft\A-4E-C" -Destination $modPath -Recurse -Force
+Write-Host "A-4E-C mod installed"
+
+
 Write-Host "Starting DCS Server"
 New-Item -Path "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease" -Name "Missions" -ItemType "Directory" -Force
 $webClient.DownloadFile($missionUrl, "C:\Users\Administrator\Saved Games\DCS.dcs_serverrelease\Missions\$missionName" )
